@@ -4,40 +4,44 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#FFE4EC">
 <style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 <title>iパス 60日</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Kaku+Gothic+New:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700;900&display=swap">
 <style>
 :root{
-  --bg:#FFCCBB; --surface:#FFFFFF; --ink:#12303A; --muted:#5B4B47; --line:#EFB8A6;
-  --navy:#006C84; --navy-soft:#E2E8E4; --accent:#6EB5C0; --accent-soft:#FFE6DD; --on-accent:#0B2F38;
+  --bg:#FFE4EC; --surface:#FFFFFF; --ink:#4A2533; --muted:#7A5264; --line:#F7C3D4;
+  --navy:#AD3A6A; --navy-soft:#FDE7EF; --accent:#FF8FB1; --accent-soft:#FFE0E9; --on-accent:#4A1027;
   --ok:#2F7D4F; --ok-soft:#E3F2E8; --ng:#B83A3A; --ng-soft:#F8E3E3;
   --on-navy:#FFFFFF; --paper:#FFFFFF; --paper-dim:1;
+  --hero:linear-gradient(135deg,#C44779 0%,#A8335F 100%);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#0B2A33; --surface:#113845; --ink:#E2E8E4; --muted:#A9C3C8; --line:#1F4C5A;
-    --navy:#6EB5C0; --navy-soft:#16414F; --accent:#FFCCBB; --accent-soft:#2E3F44; --on-accent:#3A1E14;
+    --bg:#2A1620; --surface:#3A1F2C; --ink:#FBE8EF; --muted:#D9B3C4; --line:#5C3547;
+    --navy:#FF9EC0; --navy-soft:#4A2536; --accent:#FF8FB1; --accent-soft:#4A2536; --on-accent:#3A0F22;
     --ok:#6CC08C; --ok-soft:#173226; --ng:#F09A9A; --ng-soft:#3A1C1F;
-    --on-navy:#0B2A33; --paper:#E9ECEF; --paper-dim:.92;
+    --on-navy:#2A1620; --paper:#E9ECEF; --paper-dim:.92;
+    --hero:linear-gradient(135deg,#8E2F5A 0%,#5E1D3C 100%);
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#0B2A33; --surface:#113845; --ink:#E2E8E4; --muted:#A9C3C8; --line:#1F4C5A;
-  --navy:#6EB5C0; --navy-soft:#16414F; --accent:#FFCCBB; --accent-soft:#2E3F44; --on-accent:#3A1E14;
+  --bg:#2A1620; --surface:#3A1F2C; --ink:#FBE8EF; --muted:#D9B3C4; --line:#5C3547;
+  --navy:#FF9EC0; --navy-soft:#4A2536; --accent:#FF8FB1; --accent-soft:#4A2536; --on-accent:#3A0F22;
   --ok:#6CC08C; --ok-soft:#173226; --ng:#F09A9A; --ng-soft:#3A1C1F;
-  --on-navy:#0B2A33; --paper:#E9ECEF; --paper-dim:.92;
+  --on-navy:#2A1620; --paper:#E9ECEF; --paper-dim:.92;
+  --hero:linear-gradient(135deg,#8E2F5A 0%,#5E1D3C 100%);
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;font-size:15px;line-height:1.7;padding-inline:16px;padding-block:0 48px}
 .wrap{max-width:720px;margin:0 auto}
-h1,h2,.num{font-family:"Zen Kaku Gothic New","BIZ UDPGothic",sans-serif}
+h1,h2,.num{font-family:"Zen Maru Gothic","BIZ UDPGothic","Hiragino Maru Gothic ProN",sans-serif}
 h2{font-size:17px;margin:0;text-wrap:balance}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -46,28 +50,29 @@ button{cursor:pointer}
 a{color:var(--navy)}
 
 header.top{padding-block:20px 8px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
-header.top h1{margin:0;font-size:22px;font-weight:900;color:var(--navy);letter-spacing:.02em}
-header.top h1 span{color:var(--ink)}
+header.top h1{margin:0;font-size:22px;font-weight:900;color:var(--ink);letter-spacing:.02em}
+header.top h1 span{color:var(--navy)}
+header.top h1 small{color:var(--accent);font-size:16px;margin-left:2px}
 .save{font-size:12px;color:var(--muted)}
 
 nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:16px}
-nav.tabs button{background:none;border:0;border-radius:8px;padding:8px 4px;font-weight:700;color:var(--muted)}
+nav.tabs button{background:none;border:0;border-radius:999px;padding:8px 4px;font-weight:700;color:var(--muted)}
 nav.tabs button[aria-selected="true"]{background:var(--navy);color:var(--on-navy)}
 
 .stack{display:flex;flex-direction:column;gap:16px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 2px 0 var(--line);padding:16px;display:flex;flex-direction:column;gap:10px}
 .label{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700}
 .muted{color:var(--muted);font-size:13px}
 .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .spread{justify-content:space-between}
 
-.countdown{background:var(--navy);color:var(--on-navy);border:0}
+.countdown{background:var(--hero);color:#FFFFFF;border:0;box-shadow:none}
 .countdown .label{color:inherit;opacity:.8}
 .countdown .big{display:flex;align-items:baseline;gap:8px}
 .countdown .num{font-size:52px;font-weight:900;line-height:1}
-.countdown input{background:transparent;border:1px solid currentColor;border-radius:6px;padding:2px 6px;color:inherit}
+.countdown input{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.7);border-radius:10px;padding:4px 8px;color:inherit;color-scheme:dark}
 
-.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:700;min-height:44px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 18px;font-weight:700;min-height:44px}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn.ghost{background:none}
 .btn:disabled{opacity:.4;cursor:default}
@@ -87,18 +92,18 @@ nav.tabs button[aria-selected="true"]{background:var(--navy);color:var(--on-navy
 .chip:disabled{opacity:.4;cursor:default}
 .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--navy-soft);color:var(--navy)}
 
-.paper{background:var(--paper);border-radius:8px;border:1px solid var(--line);overflow-x:auto}
+.paper{background:var(--paper);border-radius:14px;border:1px solid var(--line);overflow-x:auto}
 .paper img{display:block;width:100%;height:auto;opacity:var(--paper-dim)}
 .paper.zoom img{width:880px;max-width:none}
 .src{font-size:11px;color:var(--muted)}
 .answers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.ans{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 0;font-size:20px;font-weight:700}
+.ans{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:12px 0;font-size:20px;font-weight:700}
 .ans.sel{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}
 .ans.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
 .ans.ng{background:var(--ng-soft);border-color:var(--ng);color:var(--ng)}
 .ans:disabled{cursor:default}
 .choices{display:flex;flex-direction:column;gap:8px}
-.choice{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:12px;display:flex;gap:10px;font-weight:700}
+.choice{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px;display:flex;gap:10px;font-weight:700}
 .choice b{color:var(--muted);min-width:1.2em}
 .choice.ok{border-color:var(--ok);background:var(--ok-soft)}
 .choice.ng{border-color:var(--ng);background:var(--ng-soft)}
@@ -141,7 +146,7 @@ input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--na
 
 <div class="wrap">
   <header class="top">
-    <h1>iパス <span>60</span>日</h1>
+    <h1>iパス <span>60</span>日<small aria-hidden="true">♡</small></h1>
     <div class="save" id="save">この端末に保存しています</div>
   </header>
   <nav class="tabs" role="tablist">
