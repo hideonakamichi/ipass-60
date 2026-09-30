@@ -40,7 +40,7 @@ header.top h1 span{color:var(--navy)}
 header.top h1 small{color:var(--accent);font-size:16px;margin-left:2px}
 .save{font-size:12px;color:var(--muted)}
 
-nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:16px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:16px}
 nav.tabs button{background:none;border:0;border-radius:999px;padding:8px 4px;font-weight:700;color:var(--muted)}
 nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--on-accent)}
 
@@ -148,6 +148,7 @@ input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--na
   <nav class="tabs" role="tablist">
     <button role="tab" data-tab="home" aria-selected="true">ホーム</button>
     <button role="tab" data-tab="quiz" aria-selected="false">問題</button>
+    <button role="tab" data-tab="exam" aria-selected="false">過去問</button>
     <button role="tab" data-tab="stats" aria-selected="false">成績</button>
     <button role="tab" data-tab="plan" aria-selected="false">計画</button>
   </nav>
@@ -201,7 +202,7 @@ const PLAN = [
  {id:"w3",w:3,t:"ざっと1周：テクノロジ",d:"計算問題は解き方だけ見ておく。すきま時間に用語の一問一答（テクノロジ）"},
  {id:"w4",w:4,t:"分野別10問：ストラテジ・マネジメント",d:"間違えた問題は道場の解説を読む"},
  {id:"w5",w:5,t:"分野別10問：テクノロジ",d:"計算問題・ネットワーク・セキュリティを重点的に"},
- {id:"w6",w:6,t:"100問通しを2回",d:"120分を計って解く。点数は自動で記録される"},
+ {id:"w6",w:6,t:"100問通しを2回",d:"「過去問」タブで120分を計って解く。点数は自動で記録される"},
  {id:"w7",w:7,t:"100問通しを1回＋間違い直し",d:"目安は650点以上・各分野350点以上。届かなければ受験日をずらす"},
  {id:"w8",w:8,t:"間違えた問題だけ解き直す",d:"新しいことには手を出さない"}
 ];
@@ -309,7 +310,7 @@ new MutationObserver(()=>{
 }).observe(document.getElementById("view"), {childList:true});
 function render(){
   document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===tab));
-  ({home:renderHome, quiz:renderQuiz, stats:renderStats, plan:renderPlan})[tab]();
+  ({home:renderHome, quiz:renderQuiz, exam:renderExam, stats:renderStats, plan:renderPlan})[tab]();
 }
 
 /* ---------- reference (巻末資料) ---------- */
@@ -388,8 +389,8 @@ function renderHome(){
   $("#hTerm").addEventListener("click",()=>{ tab="quiz"; startTerms(false); });
   $("#hTermW").addEventListener("click",()=>{ tab="quiz"; startTerms(true); });
   $("#hQW").addEventListener("click",()=>{ tab="quiz"; startPractice(true); });
-  const hm = $("#hMock"); if(hm) hm.addEventListener("click",()=>{ tab="quiz"; view="menu"; render(); document.querySelector("[data-mock]")?.scrollIntoView({block:"center"}); });
-  const rs = $("#resume"); if(rs) rs.addEventListener("click",()=>{ tab="quiz"; view="mock"; render(); });
+  const hm = $("#hMock"); if(hm) hm.addEventListener("click",()=>{ tab="exam"; view="menu"; render(); });
+  const rs = $("#resume"); if(rs) rs.addEventListener("click",()=>{ tab="exam"; view="mock"; render(); });
 }
 function bindPlan(){
   document.querySelectorAll("[data-plan]").forEach(c=>c.addEventListener("change",()=>{ state.plan[c.dataset.plan]=c.checked; save(); render(); }));
@@ -457,7 +458,7 @@ function startPractice(wrongOnly){
   view = prac ? "practice" : "menu"; render(); window.scrollTo(0,0);
 }
 function startMock(y){
-  state.cur = {y, ans:{}, i:1, el:0}; save(); view = "mock"; render(); window.scrollTo(0,0);
+  state.cur = {y, ans:{}, i:1, el:0}; save(); tab = "exam"; view = "mock"; render(); window.scrollTo(0,0);
 }
 function pauseMock(){
   if(tick){ clearInterval(tick); tick=null; if(state.cur){ state.cur.el += Date.now()-tickFrom; save(); } }
@@ -471,7 +472,7 @@ function finishMock(){
   const res = {y:c.y, date:today(), total:s.total, S:s.S, M:s.M, T:s.T, c:s.c, min:Math.round(Math.min(c.el,MOCK_MS)/60000), ans:c.ans};
   state.mocks.push({y:res.y,date:res.date,total:res.total,S:res.S,M:res.M,T:res.T,c:res.c,min:res.min});
   state.cur = null; save();
-  lastResult = res; view = "result"; render(); window.scrollTo(0,0);
+  lastResult = res; tab = "exam"; view = "result"; render(); window.scrollTo(0,0);
 }
 
 function paperHtml(q){
@@ -489,8 +490,6 @@ function bindPaper(q){
 function renderQuiz(){
   if(view==="term" && tq) return renderTerm();
   if(view==="practice" && prac) return renderPractice();
-  if(view==="mock" && state.cur) return renderMock();
-  if(view==="result" && lastResult) return renderResult();
   view = "menu";
   const wn = wrongIds().length;
   const fchips = [["all","すべて"],["S","ストラテジ"],["M","マネジメント"],["T","テクノロジ"]]
@@ -516,13 +515,6 @@ function renderQuiz(){
       <p class="muted" style="margin:0">1問ごとに正解が出ます。解説は過去問道場のページで読めます。</p>
     </section>
     <section class="card">
-      <div class="row spread"><h2>100問通し</h2><span class="tag">6〜7週目</span></div>
-      ${state.cur ? `<p style="margin:0">${Y[state.cur.y].label}を解いている途中です（${Object.keys(state.cur.ans).length}/100問・残り ${fmt(MOCK_MS-state.cur.el)}）</p>
-        <div class="row"><button class="btn primary" id="resume">続きから</button><button class="btn ghost" id="discard">やめて破棄</button></div>`
-      : `<p class="muted" style="margin:0">本番と同じ120分。途中で閉じても続きから再開できます。</p>
-        <div class="chips">${YEARS.map(y=>`<button class="chip" data-mock="${y.id}">${y.label}${done(y.id)?`（${done(y.id)}回済）`:""}</button>`).join("")}</div>`}
-    </section>
-    <section class="card">
       <div class="row spread"><h2>間違い直し</h2><span class="tag">8週目</span></div>
       <p class="muted" style="margin:0">最後に間違えたままの問題から10問。正解すると一覧から外れます。</p>
       <button class="btn" id="startW" ${wn?"":"disabled"}>間違えた問題を解く（${wn}問）</button>
@@ -534,9 +526,27 @@ function renderQuiz(){
   $("#startTW").addEventListener("click",()=>startTerms(true));
   document.querySelectorAll("[data-pf]").forEach(b=>b.addEventListener("click",()=>{ pf=b.dataset.pf; render(); }));
   document.querySelectorAll("[data-py]").forEach(b=>b.addEventListener("click",()=>{ py=b.dataset.py; render(); }));
-  document.querySelectorAll("[data-mock]").forEach(b=>b.addEventListener("click",()=>startMock(b.dataset.mock)));
   $("#startP").addEventListener("click",()=>startPractice(false));
   $("#startW").addEventListener("click",()=>startPractice(true));
+}
+
+/* ---------- exam tab (100問通し) ---------- */
+function renderExam(){
+  if(view==="mock" && state.cur) return renderMock();
+  if(view==="result" && lastResult) return renderResult();
+  view = "menu";
+  const done = y => state.mocks.filter(m=>m.y===y).length;
+  $("#view").innerHTML = `<div class="stack">
+    <section class="card">
+      <div class="row spread"><h2>100問通し</h2><span class="tag">6〜7週目</span></div>
+      ${state.cur ? `<p style="margin:0">${Y[state.cur.y].label}を解いている途中です（${Object.keys(state.cur.ans).length}/100問・残り ${fmt(MOCK_MS-state.cur.el)}）</p>
+        <div class="row"><button class="btn primary" id="resume">続きから</button><button class="btn ghost" id="discard">やめて破棄</button></div>`
+      : `<p class="muted" style="margin:0">本番と同じ120分。途中で閉じても続きから再開できます。</p>
+        <div class="chips">${YEARS.map(y=>`<button class="chip" data-mock="${y.id}">${y.label}${done(y.id)?`（${done(y.id)}回済）`:""}</button>`).join("")}</div>`}
+    </section>
+    <p class="muted" style="margin:0">本番と同じく、解き終わるまで正解は表示されません。採点後に分野別の点数と答え合わせが出ます。</p>
+  </div>`;
+  document.querySelectorAll("[data-mock]").forEach(b=>b.addEventListener("click",()=>startMock(b.dataset.mock)));
   const rs=$("#resume"); if(rs) rs.addEventListener("click",()=>{ view="mock"; render(); });
   const dc=$("#discard"); if(dc) dc.addEventListener("click",()=>{
     if(dc.dataset.sure){ state.cur=null; save(); render(); } else { dc.dataset.sure="1"; dc.textContent="本当に破棄する"; }
@@ -613,7 +623,7 @@ function drawClock(){
 }
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden) pauseMock();
-  else if(tab==="quiz" && view==="mock" && state.cur && !tick){ tickFrom=Date.now(); tick=setInterval(drawClock,1000); }
+  else if(tab==="exam" && view==="mock" && state.cur && !tick){ tickFrom=Date.now(); tick=setInterval(drawClock,1000); }
 });
 
 function fieldRow(name, v, line){
@@ -637,7 +647,7 @@ function renderResult(){
       <button class="btn primary" id="toWrong" ${wrongIds().length?"":"disabled"}>間違えた問題を解き直す</button>
       <button class="btn" id="menu">メニューへ</button>
     </section></div>`;
-  $("#toWrong").addEventListener("click",()=>startPractice(true));
+  $("#toWrong").addEventListener("click",()=>{ tab="quiz"; startPractice(true); });
   $("#menu").addEventListener("click",()=>{ view="menu"; render(); });
 }
 
@@ -658,7 +668,7 @@ function renderStats(){
       <h2>100問通しの記録</h2>
       ${hist.length ? `<div style="overflow-x:auto"><table class="hist tabular"><thead><tr><th>日付・年度</th><th>総合</th><th>ストラ</th><th>マネ</th><th>テクノ</th></tr></thead><tbody>
         ${hist.map(m=>`<tr><td>${m.date.slice(5).replace("-","/")} ${Y[m.y].label.replace("年度","")}</td><td class="${m.total<600?"ng":""}">${m.total}</td><td class="${m.S<300?"ng":""}">${m.S}</td><td class="${m.M<300?"ng":""}">${m.M}</td><td class="${m.T<300?"ng":""}">${m.T}</td></tr>`).join("")}
-      </tbody></table></div>` : `<p class="muted" style="margin:0">まだありません。6週目から「問題」タブの100問通しで記録されます。</p>`}
+      </tbody></table></div>` : `<p class="muted" style="margin:0">まだありません。6週目から「過去問」タブの100問通しで記録されます。</p>`}
     </section>
     <section class="card">
       <div class="row spread"><h2>覚えた用語</h2><span class="muted tabular">${knownTerms()} / ${TERMS.length}語</span></div>
@@ -691,7 +701,7 @@ function renderPlan(){
   bindPlan();
 }
 
-if(tab==="quiz" && state.cur) view = "mock";
+if(tab==="exam" && state.cur) view = "mock";
 render();
 </script>
 
