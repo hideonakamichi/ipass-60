@@ -94,7 +94,18 @@ nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--on-ac
 .choice.ng{border-color:var(--ng);background:var(--ng-soft)}
 .choice:disabled{cursor:default}
 .expl{background:var(--bg);border-radius:8px;padding:10px 12px;font-size:14px}
-.verdict{font-weight:700}
+.verdict{font-weight:900;font-size:19px;font-family:"Zen Maru Gothic","BIZ UDPGothic",sans-serif}
+.mark{margin-left:6px;font-weight:900}
+.react{position:fixed;left:50%;top:42%;z-index:30;pointer-events:none;opacity:0;transform:translate(-50%,-50%);
+  font-family:"Zen Maru Gothic","BIZ UDPGothic",sans-serif;font-size:min(42vw,170px);font-weight:900;line-height:1}
+.react.good{color:#FF6F9C;text-shadow:0 0 0 #fff,0 6px 24px rgba(255,111,156,.45);-webkit-text-stroke:3px #fff}
+.react.bad{color:#C8414B;text-shadow:0 6px 24px rgba(200,65,75,.35);-webkit-text-stroke:3px #fff}
+.react.show.good{animation:pop .9s ease-out forwards}
+.react.show.bad{animation:shake .9s ease-out forwards}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-12deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(4deg)}45%{transform:translate(-50%,-50%) scale(.95) rotate(0)}75%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-60%) scale(1.05)}}
+@keyframes shake{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}25%{transform:translate(-58%,-50%)}35%{transform:translate(-42%,-50%)}45%{transform:translate(-55%,-50%)}55%{transform:translate(-46%,-50%)}65%{transform:translate(-50%,-50%)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%)}}
+@media (prefers-reduced-motion:reduce){.react.show.good,.react.show.bad{animation:fade .9s linear forwards}}
+@keyframes fade{0%,70%{opacity:1}100%{opacity:0}}
 .verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
 
 .timer{font-size:20px;font-weight:900}
@@ -143,6 +154,7 @@ input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--na
   <main id="view"></main>
 </div>
 <div class="overlay" id="ref" hidden></div>
+<div class="react" id="react" aria-hidden="true"></div>
 
 <script>
 const START = "2026-09-30";
@@ -391,6 +403,12 @@ let zoom = false;
 let tick = null, tickFrom = 0;
 let lastResult = null;
 let tf = "all", tq = null;    // term filter / session
+function react(ok){
+  const el = document.getElementById("react");
+  el.className = "react"; el.textContent = ok ? "◎" : "✖";
+  void el.offsetWidth;
+  el.className = "react show " + (ok ? "good" : "bad");
+}
 const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const wrongTerms = () => TERMS.filter(t=>state.w[t.t] && state.w[t.t].l===0);
 const knownTerms = f => TERMS.filter(t=>(!f||t.f===f) && state.w[t.t] && state.w[t.t].l===1).length;
@@ -417,8 +435,8 @@ function renderTerm(){
     <div class="row spread"><span class="tag">${F[q.t.f]}</span><span class="muted tabular">${p.i+1} / ${p.list.length}</span></div>
     <div class="label">この説明にあてはまる用語は？</div>
     <div class="q" style="font-size:17px;font-weight:700">${esc(q.t.d)}</div>
-    <div class="choices">${q.c.map((c,i)=>`<button class="choice ${k!==null&&c===q.t?"ok":""} ${k===i&&c!==q.t?"ng":""}" data-tp="${i}" ${k!==null?"disabled":""}><b>${KANA[i]}</b><span>${esc(c.t)}</span></button>`).join("")}</div>
-    ${k!==null?`<div class="verdict ${q.c[k]===q.t?"ok":"ng"}">${q.c[k]===q.t?"正解":"不正解　正解は「"+esc(q.t.t)+"」"}</div>
+    <div class="choices">${q.c.map((c,i)=>`<button class="choice ${k!==null&&c===q.t?"ok":""} ${k===i&&c!==q.t?"ng":""}" data-tp="${i}" ${k!==null?"disabled":""}><b>${KANA[i]}</b><span>${esc(c.t)}${k!==null&&c===q.t?'<span class="mark">◎</span>':""}${k===i&&c!==q.t?'<span class="mark">✖</span>':""}</span></button>`).join("")}</div>
+    ${k!==null?`<div class="verdict ${q.c[k]===q.t?"ok":"ng"}">${q.c[k]===q.t?"◎ 正解！":"✖ 不正解　正解は「"+esc(q.t.t)+"」"}</div>
       ${q.c[k]!==q.t?`<div class="expl">あなたが選んだ「${esc(q.c[k].t)}」は：${esc(q.c[k].d)}</div>`:""}
       <button class="btn primary" id="next">${p.i+1<p.list.length?"次へ":"結果を見る"}</button>`:""}
     </section><button class="btn ghost" id="quit">やめてメニューへ</button></div>`;
@@ -426,7 +444,7 @@ function renderTerm(){
     const i = Number(b.dataset.tp); p.pick = i;
     const r = state.w[q.t.t] || {c:0,w:0,l:0};
     if(q.c[i]===q.t){ r.c++; r.l=1; p.right++; } else { r.w++; r.l=0; }
-    state.w[q.t.t] = r; save(); render();
+    state.w[q.t.t] = r; save(); render(); react(q.c[i]===q.t);
   }));
   const nx=$("#next"); if(nx) nx.addEventListener("click",()=>{ p.i++; p.pick=null; render(); window.scrollTo(0,0); });
   $("#quit").addEventListener("click",()=>{ tq=null; view="menu"; render(); });
@@ -540,15 +558,15 @@ function renderPractice(){
   $("#view").innerHTML = `<div class="stack"><section class="card">
     <div class="row spread"><span class="row"><span class="tag">${F[q.f]}</span><span class="tag">${Y[q.y].label} 問${q.n}</span></span><span class="muted tabular">${p.i+1} / ${p.list.length}</span></div>
     ${paperHtml(q)}
-    <div class="answers">${[0,1,2,3].map(i=>`<button class="ans ${k!==null&&i===q.a?"ok":""} ${k===i&&i!==q.a?"ng":""}" data-pick="${i}" ${k!==null?"disabled":""}>${KANA[i]}</button>`).join("")}</div>
-    ${k!==null?`<div class="verdict ${k===q.a?"ok":"ng"}">${k===q.a?"正解":"不正解　正解は「"+KANA[q.a]+"」"}</div>
+    <div class="answers">${[0,1,2,3].map(i=>`<button class="ans ${k!==null&&i===q.a?"ok":""} ${k===i&&i!==q.a?"ng":""}" data-pick="${i}" ${k!==null?"disabled":""}>${KANA[i]}${k!==null&&i===q.a?'<span class="mark">◎</span>':""}${k===i&&i!==q.a?'<span class="mark">✖</span>':""}</button>`).join("")}</div>
+    ${k!==null?`<div class="verdict ${k===q.a?"ok":"ng"}">${k===q.a?"◎ 正解！":"✖ 不正解　正解は「"+KANA[q.a]+"」"}</div>
       <a class="btn" href="${dojo(q)}" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">過去問道場で解説を読む</a>
       <button class="btn primary" id="next">${p.i+1<p.list.length?"次の問題":"結果を見る"}</button>`:""}
     </section><button class="btn ghost" id="quit">やめてメニューへ</button></div>`;
   bindPaper(q);
   document.querySelectorAll("[data-pick]").forEach(b=>b.addEventListener("click",()=>{
     const i = Number(b.dataset.pick); p.pick = i; if(i===q.a) p.right++;
-    record(q,i); save(); render();
+    record(q,i); save(); render(); react(i===q.a);
   }));
   const nx=$("#next"); if(nx) nx.addEventListener("click",()=>{ p.i++; p.pick=null; render(); window.scrollTo(0,0); });
   $("#quit").addEventListener("click",()=>{ prac=null; view="menu"; render(); });
