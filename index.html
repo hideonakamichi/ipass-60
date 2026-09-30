@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>iパス 60日</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Kaku+Gothic+New:wght@700;900&display=swap">
+<style>
+:root{
+  --bg:#FFCCBB; --surface:#FFFFFF; --ink:#12303A; --muted:#5B4B47; --line:#EFB8A6;
+  --navy:#006C84; --navy-soft:#E2E8E4; --accent:#6EB5C0; --accent-soft:#FFE6DD; --on-accent:#0B2F38;
+  --ok:#2F7D4F; --ok-soft:#E3F2E8; --ng:#B83A3A; --ng-soft:#F8E3E3;
+  --on-navy:#FFFFFF; --paper:#FFFFFF; --paper-dim:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0B2A33; --surface:#113845; --ink:#E2E8E4; --muted:#A9C3C8; --line:#1F4C5A;
+    --navy:#6EB5C0; --navy-soft:#16414F; --accent:#FFCCBB; --accent-soft:#2E3F44; --on-accent:#3A1E14;
+    --ok:#6CC08C; --ok-soft:#173226; --ng:#F09A9A; --ng-soft:#3A1C1F;
+    --on-navy:#0B2A33; --paper:#E9ECEF; --paper-dim:.92;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0B2A33; --surface:#113845; --ink:#E2E8E4; --muted:#A9C3C8; --line:#1F4C5A;
+  --navy:#6EB5C0; --navy-soft:#16414F; --accent:#FFCCBB; --accent-soft:#2E3F44; --on-accent:#3A1E14;
+  --ok:#6CC08C; --ok-soft:#173226; --ng:#F09A9A; --ng-soft:#3A1C1F;
+  --on-navy:#0B2A33; --paper:#E9ECEF; --paper-dim:.92;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;font-size:15px;line-height:1.7;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:720px;margin:0 auto}
+h1,h2,.num{font-family:"Zen Kaku Gothic New","BIZ UDPGothic",sans-serif}
+h2{font-size:17px;margin:0;text-wrap:balance}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.tabular{font-variant-numeric:tabular-nums}
+a{color:var(--navy)}
+
+header.top{padding-block:20px 8px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+header.top h1{margin:0;font-size:22px;font-weight:900;color:var(--navy);letter-spacing:.02em}
+header.top h1 span{color:var(--ink)}
+.save{font-size:12px;color:var(--muted)}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:16px}
+nav.tabs button{background:none;border:0;border-radius:8px;padding:8px 4px;font-weight:700;color:var(--muted)}
+nav.tabs button[aria-selected="true"]{background:var(--navy);color:var(--on-navy)}
+
+.stack{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.label{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.muted{color:var(--muted);font-size:13px}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.spread{justify-content:space-between}
+
+.countdown{background:var(--navy);color:var(--on-navy);border:0}
+.countdown .label{color:inherit;opacity:.8}
+.countdown .big{display:flex;align-items:baseline;gap:8px}
+.countdown .num{font-size:52px;font-weight:900;line-height:1}
+.countdown input{background:transparent;border:1px solid currentColor;border-radius:6px;padding:2px 6px;color:inherit}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:700;min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.ghost{background:none}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.big{padding:14px}
+
+.bar{height:10px;border-radius:5px;background:var(--navy-soft);position:relative}
+.bar > i{display:block;height:100%;border-radius:5px;background:var(--navy)}
+.bar .mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--accent)}
+.days{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:60px}
+.days div{background:var(--navy);border-radius:3px 3px 0 0;min-height:2px}
+.days div.zero{background:var(--line)}
+.days div.today{background:var(--accent);outline:1px solid var(--navy)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:700;min-height:44px}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}
+.chip:disabled{opacity:.4;cursor:default}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--navy-soft);color:var(--navy)}
+
+.paper{background:var(--paper);border-radius:8px;border:1px solid var(--line);overflow-x:auto}
+.paper img{display:block;width:100%;height:auto;opacity:var(--paper-dim)}
+.paper.zoom img{width:880px;max-width:none}
+.src{font-size:11px;color:var(--muted)}
+.answers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ans{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 0;font-size:20px;font-weight:700}
+.ans.sel{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}
+.ans.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.ans.ng{background:var(--ng-soft);border-color:var(--ng);color:var(--ng)}
+.ans:disabled{cursor:default}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:12px;display:flex;gap:10px;font-weight:700}
+.choice b{color:var(--muted);min-width:1.2em}
+.choice.ok{border-color:var(--ok);background:var(--ok-soft)}
+.choice.ng{border-color:var(--ng);background:var(--ng-soft)}
+.choice:disabled{cursor:default}
+.expl{background:var(--bg);border-radius:8px;padding:10px 12px;font-size:14px}
+.verdict{font-weight:700}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+
+.timer{font-size:20px;font-weight:900}
+.timer.low{color:var(--ng)}
+.grid100{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.grid100 button,.grid100 a{text-align:center;text-decoration:none;color:inherit;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:0;font-size:13px;min-height:44px;display:flex;align-items:center;justify-content:center;gap:2px}
+.grid100 button.done{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.grid100 button.cur{outline:3px solid var(--accent);outline-offset:1px}
+.ph{padding:28px 16px;text-align:center;color:#5E6B7E;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.paper img:not([src]){display:none}
+.grid100 .ok{background:var(--ok-soft);color:var(--ok)}
+.grid100 .ng{background:var(--ng-soft);color:var(--ng)}
+
+.field{display:flex;flex-direction:column;gap:4px}
+.field .row{justify-content:space-between}
+.pill{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.ng{background:var(--ng-soft);color:var(--ng)} .pill.na{background:var(--line);color:var(--muted)}
+table.hist{width:100%;border-collapse:collapse;font-size:13px}
+table.hist th,table.hist td{padding:6px 4px;border-top:1px solid var(--line);text-align:right}
+table.hist th:first-child,table.hist td:first-child{text-align:left}
+table.hist .ng{color:var(--ng);font-weight:700}
+
+.plan{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.plan li{display:grid;grid-template-columns:28px 1fr;gap:8px;padding-block:12px;border-top:1px solid var(--line)}
+.plan li:first-child{border-top:0}
+.plan li.now{background:var(--accent-soft);margin-inline:-16px;padding-inline:16px}
+input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--navy)}
+.plan .when{font-size:12px;color:var(--muted)}
+
+.overlay{position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 40px}
+.overlay .inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+@media (prefers-reduced-motion:no-preference){ .bar>i{transition:width .3s} }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>iパス <span>60</span>日</h1>
+    <div class="save" id="save">この端末に保存しています</div>
+  </header>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="home" aria-selected="true">ホーム</button>
+    <button role="tab" data-tab="quiz" aria-selected="false">問題</button>
+    <button role="tab" data-tab="stats" aria-selected="false">成績</button>
+    <button role="tab" data-tab="plan" aria-selected="false">計画</button>
+  </nav>
+  <main id="view"></main>
+</div>
+<div class="overlay" id="ref" hidden></div>
+
+<script>
+const START = "2026-09-30";
+const TARGET_H = 75;
+const MOCK_MS = 120*60*1000;
+const F = {S:"ストラテジ", M:"マネジメント", T:"テクノロジ"};
+const KANA = "アイウエ";
+const YEARS = [{"id": "2026r08", "label": "令和8年度", "dojo": "08_haru", "m": [35, 54], "ans": "アアウイエエイウイエエエウアイアイアアイウエイアエアイイウアウウウアエウエイウアウイイイイウウウアウエアイウウエウアウアイエウウエイイエウエアイエアエエウエウエアアアエエエアアイウウイアイイアイウイウ"}, {"id": "2025r07", "label": "令和7年度", "dojo": "07_haru", "m": [36, 55], "ans": "ウウイエウイイイウエエエウイアイアアアイイウウエアウイエイエイウアイエアエエアイエアアエアイエアウアエアイアアアイウアエウアウイアイイウイエエイウアウウイエアウエウウイイエウイアエエアウイウウアウウア"}, {"id": "2024r06", "label": "令和6年度", "dojo": "06_haru", "m": [36, 55], "ans": "エイウイイエイウアイイアエアウイエウウイウウアウアアイアイエエイエエエアエイエアイイイアエエウイアエエアウウウイウエイイアエアイウエウウイウイウエエエウウアエアエイエエエウエアウアエウイアイウイイウイ"}];
+const TERMS = [["S","SWOT分析","自社の強み・弱みと、外部環境の機会・脅威の4つの視点で現状を整理する分析手法"],["S","PPM","市場成長率と市場占有率の2軸で事業を「花形・金のなる木・問題児・負け犬」に分類し、経営資源の配分を考える手法"],["S","3C分析","顧客（市場）・競合・自社の3つの観点から事業環境を分析する手法"],["S","バリューチェーン分析","企業の活動を購買・製造・販売などの主活動と支援活動に分け、どの活動で価値が生まれているかを分析する手法"],["S","コアコンピタンス","他社がまねできない、自社の中核となる強み"],["S","ベンチマーキング","優れた他社のやり方を指標として自社と比較し、改善に生かす手法"],["S","アライアンス","複数の企業が互いの経営資源を持ち寄って協力する提携関係"],["S","M&A","企業の合併や買収"],["S","ニッチ戦略","大手企業が手を出さない小さな市場に経営資源を集中させる戦略"],["S","ブルーオーシャン戦略","競争相手のいない新しい市場を切り開く戦略"],["S","4P","製品・価格・流通・販売促進の4つの要素を組み合わせてマーケティング施策を考える枠組み"],["S","セグメンテーション","市場を年齢や地域、ニーズなどの基準で細かいグループに分けること"],["S","ターゲティング","細かく分けた市場の中から、自社が狙う顧客層を決めること"],["S","ポジショニング","競合と比べて、自社製品を顧客にどういう立ち位置で認識させるかを決めること"],["S","BCP","災害や事故が起きても、重要な業務を継続したり早期に復旧したりするための計画"],["S","CRM","顧客情報を一元管理し、顧客との長期的な関係を築いて満足度や収益を高める経営手法"],["S","SCM","原材料の調達から製造・物流・販売までの供給の流れ全体を最適化する経営手法"],["S","ERP","販売・生産・会計・人事など企業全体の経営資源を統合的に管理し、有効活用する考え方"],["S","SFA","営業活動の案件や顧客とのやり取りを記録・共有し、営業を効率化するシステム"],["S","BPR","業務プロセスを根本から見直し、抜本的に再設計すること"],["S","BPO","自社の業務の一部を、専門の外部企業にまとめて委託すること"],["S","BPM","業務プロセスを分析・設計・実行・評価のサイクルで継続的に改善していく管理手法"],["S","RPA","パソコン上の定型的な事務作業を、ソフトウェアのロボットが自動で行う仕組み"],["S","KPI","目標の達成に向けた進み具合を測るために設定する、重要な業績評価の指標"],["S","KGI","最終的に達成すべき目標を数値で表した指標"],["S","CSF","目標を達成するために特に重要となる成功要因"],["S","バランススコアカード","財務・顧客・業務プロセス・学習と成長の4つの視点から業績を評価する手法"],["S","ROE","自己資本に対して、どれだけの当期純利益を上げたかを示す指標"],["S","損益分岐点","売上高と費用が等しくなり、利益がちょうどゼロになる売上高"],["S","固定費","売上高や生産量の増減にかかわらず、一定額かかる費用（家賃など）"],["S","変動費","売上高や生産量に比例して増減する費用（材料費など）"],["S","貸借対照表","ある時点の企業の資産・負債・純資産の状態を表す財務諸表"],["S","損益計算書","一定期間の収益と費用から、企業がどれだけ利益を上げたかを表す財務諸表"],["S","キャッシュフロー計算書","一定期間の現金の出入りを、営業・投資・財務の活動ごとに表す財務諸表"],["S","流動比率","流動資産を流動負債で割った値。短期的な支払い能力を示す"],["S","著作権","小説や音楽、プログラムなどの創作物を保護する権利。創作した時点で自動的に発生する"],["S","特許権","産業上利用できる新しい発明を保護する権利。出願して登録されると得られる"],["S","実用新案権","物品の形状・構造・組合せに関する技術的な工夫（考案）を保護する権利。特許より簡単な手続きで登録される"],["S","意匠権","物品や画像などの見た目のデザイン（形状・模様・色彩の組合せによる美しさ）を保護する権利"],["S","商標権","商品やサービスに付けるマークや名称を保護する権利"],["S","営業秘密","秘密として管理され、事業に有用で、公然と知られていない技術上・営業上の情報。不正競争防止法で保護される"],["S","不正アクセス禁止法","他人のIDとパスワードを無断で使ってログインする行為などを禁止する法律"],["S","個人情報保護法","個人情報を取り扱う事業者に、利用目的の特定や安全管理などの義務を定めた法律"],["S","要配慮個人情報","人種・信条・病歴・犯罪の経歴など、不当な差別や偏見が生じないよう取扱いに特に配慮が必要な個人情報"],["S","匿名加工情報","特定の個人を識別できないように加工し、元の個人情報に復元できないようにした情報"],["S","オプトイン","広告メールなどを送る前に、受け取る人から事前に同意を得る方式"],["S","労働者派遣","派遣元と雇用契約を結んだ労働者が、派遣先の指揮命令を受けて働く形態"],["S","請負契約","仕事の完成を約束し、その成果に対して報酬が支払われる契約。発注者は作業者に直接指示できない"],["S","準委任契約","仕事の完成ではなく、業務を行うこと自体を約束する契約。請負契約と同じく、発注者は作業者に直接指揮命令できない（この点が労働者派遣と違う）"],["S","コンプライアンス","法令や社会的な規範、社内規則などを守って企業活動を行うこと"],["S","コーポレートガバナンス","経営者の独断や不正を防ぎ、企業が健全に経営されるよう監視・統制する仕組み"],["S","CSR","企業が利益の追求だけでなく、環境や社会に対する責任を果たす活動を行うこと"],["S","SDGs","2030年までに国際社会が達成を目指す、17の目標からなる持続可能な開発目標"],["S","DX","デジタル技術を活用して、製品やサービス、ビジネスモデル、組織そのものを変革すること"],["S","シェアリングエコノミー","個人が持つモノや場所、スキルなどを、インターネットを通じて他人と共有・貸し借りする経済の仕組み"],["S","フィンテック","金融とIT技術を組み合わせた新しい金融サービス"],["S","クラウドファンディング","インターネットを通じて、不特定多数の人から資金を集める仕組み"],["S","ABC分析","売上などが大きい順に項目を並べ、累積比率でA・B・Cのグループに分けて重点的に管理する手法"],["S","パレート図","項目を値の大きい順に並べた棒グラフと、その累積比率の折れ線グラフを組み合わせた図"],["S","特性要因図","結果（特性）とそれに影響する原因（要因）の関係を、魚の骨のような形で整理した図"],["S","散布図","2つのデータの関係を点の分布で表し、相関があるかどうかを見る図"],["S","ブレーンストーミング","批判をしない、自由奔放、質より量、他人の案への便乗歓迎というルールで、多くのアイデアを出し合う手法"],["S","ジャストインタイム","必要なものを、必要なときに、必要な量だけ生産・調達して在庫を減らす生産方式"],["S","コンカレントエンジニアリング","設計や製造準備などの工程を並行して進め、製品の開発期間を短くする手法"],["S","リーンスタートアップ","最小限の製品を素早く作って顧客の反応を確かめ、改善を繰り返す事業開発の手法"],["S","ハッカソン","エンジニアやデザイナーなどが短期間集中でアイデアを出し合い、ソフトウェアなどを開発するイベント"],["S","RFP","システムの調達で、発注先の候補となる企業に提案書の提出を依頼する文書"],["S","ビッグデータ","従来のシステムでは扱いきれないほど大量で多様な、高い頻度で生まれるデータ"],["S","教師あり学習","正解のラベルが付いたデータを使って、入力と正解の関係をAIに学習させる機械学習の方法"],["S","生成AI","学習したデータをもとに、文章・画像・音声などの新しいコンテンツを作り出すAI"],["M","WBS","プロジェクトの作業を、階層的に細かく分解して整理した図"],["M","ガントチャート","作業ごとの予定と実績の期間を横棒で表した工程表"],["M","アローダイアグラム","作業の順序関係と所要日数を矢印でつないで表し、全体の日程を管理する図"],["M","クリティカルパス","作業の経路の中で最も時間がかかり、遅れるとプロジェクト全体の日程が遅れる経路"],["M","EVM","作業の進捗を金額に換算し、計画・実績・出来高を比べてコストとスケジュールを管理する手法"],["M","ステークホルダ","プロジェクトや企業活動に関わり、影響を与えたり受けたりする利害関係者"],["M","PMBOK","プロジェクトマネジメントの知識体系をまとめたガイド"],["M","要件定義","システムに必要な機能や性能を明確にし、利用者と合意する工程"],["M","ウォーターフォールモデル","要件定義・設計・プログラミング・テストなどの工程を順番に進め、原則として前の工程に戻らない開発手法"],["M","アジャイル","短い期間で計画・開発・テストを繰り返し、変化に柔軟に対応しながら少しずつ機能を完成させる開発手法の総称"],["M","スクラム","スプリントと呼ぶ短い期間ごとに、チームで開発と振り返りを繰り返すアジャイル開発の手法"],["M","XP","テスト駆動開発やペアプログラミングなどの実践を重視するアジャイル開発の手法"],["M","ペアプログラミング","2人のプログラマが1台のコンピュータを使い、一方がコードを書き、もう一方が確認しながら開発する手法"],["M","テスト駆動開発","先にテストを書き、そのテストに合格するようにプログラムを作っていく開発手法"],["M","プロトタイピング","早い段階で試作品を作り、利用者に確認してもらいながら要求を固めていく開発手法"],["M","DevOps","開発担当と運用担当が密に連携し、システムの開発から運用までを素早く継続的に行う考え方"],["M","単体テスト","プログラムを構成する部品（モジュール）ごとに、正しく動くかを確かめるテスト"],["M","結合テスト","複数のモジュールを組み合わせたときに、正しく連携して動くかを確かめるテスト"],["M","システムテスト","開発したシステム全体が、要件定義で決めた機能や性能を満たしているかを開発側が確かめるテスト"],["M","受入れテスト","発注者や利用者が、システムが要求どおりにできているかを確認するテスト"],["M","ブラックボックステスト","プログラムの内部構造は見ずに、入力と出力の関係だけで動作を確認するテスト"],["M","ホワイトボックステスト","プログラムの内部構造（命令や分岐）に着目し、処理の流れを網羅するように確認するテスト"],["M","回帰テスト","プログラムを修正したときに、修正していない部分に悪影響が出ていないかを確認するテスト"],["M","ソフトウェア保守","稼働中のシステムに対して、不具合の修正や機能の追加・変更を行うこと"],["M","ITIL","ITサービスマネジメントの成功事例（ベストプラクティス）をまとめたガイドライン"],["M","SLA","サービスの提供者と利用者の間で、サービスの品質や範囲を合意した文書"],["M","SLM","合意したサービスレベルを維持・向上させるために、計画・実行・確認・改善を繰り返す管理活動"],["M","サービスデスク","利用者からの問合せを一元的に受け付ける窓口"],["M","インシデント管理","サービスの中断や品質の低下が起きたときに、できるだけ早くサービスを復旧させる活動"],["M","問題管理","インシデントの根本原因を突き止め、再発を防ぐための活動"],["M","変更管理","システムへの変更を記録・評価・承認し、変更を安全に実施するための活動"],["M","構成管理","ハードウェアやソフトウェアなどのIT資産の情報を正確に記録・管理する活動"],["M","エスカレーション","自分で解決できない問題を、上位の担当者や専門部署に引き継ぐこと"],["M","ファシリティマネジメント","建物や設備、電源、空調などを最適な状態に保つよう管理すること"],["M","UPS","停電時に一時的に電力を供給し、機器を安全に停止させるための装置"],["M","システム監査","独立した立場の監査人が、情報システムを点検・評価し、改善を助言する活動"],["M","監査証跡","システムの処理の流れを後から追跡・確認できるように残された記録"],["M","内部統制","業務の有効性と効率性、財務報告の信頼性、法令の遵守などを達成するために、組織内に設ける仕組み"],["M","職務分掌","不正や誤りを防ぐため、業務の担当や権限を分けて、1人に集中させないこと"],["M","ITガバナンス","経営目標を達成するために、ITへの投資や活用を適切に方向付け、統制する仕組み"],["M","モニタリング","内部統制が有効に機能しているかを、業務の中での日常的な点検や定期的な評価によって継続的に確認する活動"],["M","ファンクションポイント法","システムが持つ機能の数や複雑さをもとに、開発規模を見積もる手法"],["M","工数","作業に必要な量を「人数×時間」で表したもの。人日や人月などの単位を使う"],["M","PDCA","計画・実行・評価・改善のサイクルを繰り返して、業務を継続的に良くしていく考え方"],["M","リスク回避","リスクの原因を取り除いたり活動をやめたりして、リスクそのものが起きないようにする対応"],["M","リスク移転","保険をかけたり外部に委託したりして、リスクの影響を他者に移す対応"],["M","リスク軽減","対策を講じて、リスクが起きる確率や起きたときの影響を小さくする対応"],["M","リスク受容","影響が小さいリスクについて、特に対策をとらずに受け入れる対応"],["M","DFD","データの流れと処理の関係を、プロセス・データフロー・データストア・外部実体の記号で表した図"],["M","E-R図","実体（エンティティ）とその関連（リレーションシップ）を表した図。データベースの設計などで使う"],["T","CPU","プログラムの命令を解釈・実行し、演算とコンピュータ全体の制御を行う装置"],["T","クロック周波数","CPUが動作するタイミングを合わせる信号の、1秒あたりの回数。高いほど処理が速い傾向がある"],["T","マルチコアプロセッサ","1つのCPUの中に複数の処理装置（コア）を持ち、並行して処理できるプロセッサ"],["T","キャッシュメモリ","CPUと主記憶の速度差を埋めるため、よく使うデータを一時的に置いておく高速なメモリ"],["T","DRAM","主記憶に使われるメモリ。電源を切ると内容が消え、内容を保つために定期的な再書込み（リフレッシュ）が必要"],["T","SSD","フラッシュメモリを使った補助記憶装置。HDDより高速で、衝撃に強い"],["T","GPU","画像処理を得意とし、多数の単純な計算を並列に処理できる演算装置。AIの学習にも使われる"],["T","OS","ハードウェアやファイル、メモリなどを管理し、アプリケーションが動く基盤となる基本ソフトウェア"],["T","仮想記憶","補助記憶装置の一部を使って、実際の主記憶より大きなメモリがあるように見せる仕組み"],["T","OSS","ソースコードが公開され、利用・改変・再配布が認められているソフトウェア"],["T","デュアルシステム","2組のシステムで同じ処理を同時に行い、結果を照合しながら動かす構成"],["T","デュプレックスシステム","本番用と予備用の2組のシステムを用意し、障害が起きたら予備に切り替える構成"],["T","RAID1","同じデータを2台のディスクに書き込み、1台が壊れてもデータを失わないようにする方式（ミラーリング）"],["T","RAID5","複数のディスクにデータとパリティ（誤り訂正用の情報）を分散して記録し、1台が故障しても復元できる方式"],["T","稼働率","システムが正常に動いている時間の割合。MTBF÷（MTBF＋MTTR）で求める"],["T","MTBF","故障が直ってから、次に故障するまでの平均時間"],["T","MTTR","故障してから、修理が終わるまでの平均時間"],["T","フェールセーフ","故障が起きたとき、システムを安全な状態にして停止させる設計の考え方"],["T","フェールソフト","故障が起きたとき、故障した部分を切り離し、機能を落としてでも運転を続ける設計の考え方"],["T","フールプルーフ","利用者が誤った操作をしても、危険な状態にならないようにする設計の考え方"],["T","シンクライアント","利用者の端末には最低限の機能しか持たせず、処理やデータはサーバ側で管理する方式"],["T","仮想化","1台の物理的なコンピュータ上で、複数の仮想的なコンピュータを動かす技術"],["T","SaaS","ソフトウェアの機能を、インターネット経由のサービスとして提供する形態"],["T","PaaS","アプリケーションを動かすための基盤（OSやミドルウェアなど）を、インターネット経由で提供するサービス"],["T","IaaS","サーバやストレージ、ネットワークなどのインフラを、インターネット経由で提供するサービス"],["T","関係データベース","データを行と列からなる表の形で管理するデータベース"],["T","主キー","表の中の1行を一意に特定するための項目。重複や空の値は許されない"],["T","外部キー","ほかの表の主キーを参照し、表どうしを関連付ける項目"],["T","正規化","データの重複をなくし、矛盾が起きにくくなるように表を分割・整理すること"],["T","トランザクション","データベースに対する、それ以上分けられない一連の処理のまとまり"],["T","排他制御","複数の利用者が同じデータを同時に更新して矛盾が起きないよう、ロックなどで順番に処理させる仕組み"],["T","ロールバック","処理の途中で障害が起きたとき、処理を始める前の状態にデータを戻すこと"],["T","ロールフォワード","障害が起きたとき、バックアップと更新後の記録（ログ）を使って、障害発生直前の状態までデータを復旧すること"],["T","IPアドレス","ネットワーク上でコンピュータなどの機器を識別するための番号"],["T","DNS","ドメイン名とIPアドレスを対応付ける仕組み"],["T","DHCP","ネットワークに接続した機器に、IPアドレスなどを自動的に割り当てるプロトコル"],["T","NAT","プライベートIPアドレスとグローバルIPアドレスを相互に変換する技術"],["T","ルータ","異なるネットワーク同士をつなぎ、宛先に応じて経路を選んでデータを転送する機器"],["T","SMTP","電子メールを送信・転送するためのプロトコル"],["T","POP3","メールサーバから電子メールを受信し、端末にダウンロードするためのプロトコル"],["T","IMAP","メールをサーバ上に保存したまま閲覧・管理する、受信用のプロトコル"],["T","HTTPS","Webの通信をSSL/TLSで暗号化して安全に行うプロトコル"],["T","MACアドレス","ネットワーク機器ごとに割り当てられた、機器を識別するための固有の番号"],["T","ESSID","無線LANのネットワークを識別するための名前"],["T","5G","高速・大容量、低遅延、多数同時接続を特徴とする第5世代の移動通信システム"],["T","LPWA","消費電力が少なく、広い範囲で通信できる無線通信技術の総称。IoT機器で使われる"],["T","IoT","さまざまなモノがインターネットにつながり、情報をやり取りする仕組み"],["T","Bluetooth","数m〜数十m程度の近距離で、機器同士を無線でつなぐ通信規格"],["T","bps","1秒間に送れるデータのビット数を表す、通信速度の単位"],["T","機密性","許可された人だけが情報にアクセスできる状態を保つこと"],["T","完全性","情報が正確で、改ざんや破壊をされていない状態を保つこと"],["T","可用性","許可された人が、必要なときにいつでも情報やシステムを使える状態を保つこと"],["T","ISMS","組織が情報セキュリティを計画・運用・評価・改善していくための管理の仕組み"],["T","情報セキュリティポリシー","組織の情報セキュリティに関する基本方針や対策の基準をまとめたもの"],["T","フィッシング","実在の企業などを装ったメールで偽のWebサイトに誘導し、IDやパスワードなどを盗む手口"],["T","ランサムウェア","ファイルを勝手に暗号化するなどして使えなくし、元に戻す代わりに金銭を要求するマルウェア"],["T","ワーム","自分自身を複製し、ネットワークを通じてほかのコンピュータへ次々と感染を広げるマルウェア"],["T","トロイの木馬","有益なソフトウェアを装ってコンピュータに入り込み、裏で不正な動作をするマルウェア"],["T","スパイウェア","利用者に気付かれないように情報を収集し、外部に送信するソフトウェア"],["T","ボット","感染したコンピュータを、外部の攻撃者から遠隔操作できるようにするマルウェア"],["T","ソーシャルエンジニアリング","技術ではなく、人の心理的な隙や油断を突いてパスワードなどの情報を盗み出す手口"],["T","DoS攻撃","大量のデータを送りつけるなどしてサーバに負荷をかけ、サービスを提供できなくする攻撃"],["T","SQLインジェクション","Webアプリケーションの入力欄に不正な命令文を入力し、データベースを不正に操作する攻撃"],["T","クロスサイトスクリプティング","Webサイトの脆弱性を利用して悪意のあるスクリプトを埋め込み、閲覧者のブラウザで実行させる攻撃"],["T","ブルートフォース攻撃","パスワードとして考えられる文字の組合せを、総当たりで試す攻撃"],["T","パスワードリスト攻撃","ほかのサービスから流出したIDとパスワードの組合せを使って、不正ログインを試みる攻撃"],["T","ゼロデイ攻撃","ソフトウェアの脆弱性が見つかってから、修正プログラムが提供される前にその脆弱性を突く攻撃"],["T","標的型攻撃","特定の組織や人を狙い、業務に関係があるように装ったメールなどでマルウェアに感染させる攻撃"],["T","DNSキャッシュポイズニング","DNSサーバに偽の対応情報を覚え込ませ、利用者を偽のWebサイトに誘導する攻撃"],["T","ファイアウォール","外部ネットワークと内部ネットワークの間で通信を監視し、許可されていない通信を遮断する仕組み"],["T","DMZ","外部ネットワークと内部ネットワークの中間に設ける、公開用のサーバを置くための区域"],["T","VPN","インターネットなどの公衆回線上に、暗号化などで仮想的な専用回線を作り、安全に通信する技術"],["T","共通鍵暗号方式","暗号化と復号に同じ鍵を使う暗号方式"],["T","公開鍵暗号方式","暗号化と復号に異なる鍵（公開鍵と秘密鍵のペア）を使う暗号方式"],["T","デジタル署名","送信者の秘密鍵を使って付けることで、送信者が本人であることと、内容が改ざんされていないことを確認できる技術"],["T","PKI","認証局が発行するデジタル証明書によって、公開鍵の持ち主が本物であることを保証する仕組み"],["T","多要素認証","知識（パスワード）・所持（スマホなど）・生体（指紋など）のうち、異なる2つ以上の要素を組み合わせて本人を確認する方法"],["T","生体認証","指紋・顔・静脈など、身体的な特徴を使って本人を確認する方法"],["T","CSIRT","セキュリティ事故（インシデント）が起きたときに対応する、組織内の専門チーム"],["T","ハッシュ関数","任意の長さのデータから固定長の値を作る関数。元のデータに戻せないため、改ざんの検出などに使われる"]].map(([f,t,d])=>({f,t,d}));
+const REFN = {"2026r08": 7, "2025r07": 7, "2024r06": 7};
+
+/* 300 questions built from the IPA answer keys */
+const QS = [];
+YEARS.forEach(y=>{
+  for(let n=1;n<=100;n++){
+    const f = n < y.m[0] ? "S" : n <= y.m[1] ? "M" : "T";
+    QS.push({id:y.id+"-"+n, y:y.id, n, f, a:KANA.indexOf(y.ans[n-1])});
+  }
+});
+const Y = Object.fromEntries(YEARS.map(y=>[y.id,y]));
+const QBY = Object.fromEntries(QS.map(q=>[q.id,q]));
+const CACHE = {};
+const loadYear = y => CACHE[y] || (CACHE[y] = fetch(`data/${y}.json`).then(r=>{ if(!r.ok) throw 0; return r.json(); }).catch(e=>{ delete CACHE[y]; throw e; }));
+function fillImgs(){
+  document.querySelectorAll("img[data-y]").forEach(el=>{
+    if(el.getAttribute("src")) return;
+    const ph = el.previousElementSibling;
+    if(ph){ ph.textContent = "問題を読み込み中…"; }
+    loadYear(el.dataset.y).then(d=>{ el.src = el.dataset.ref ? d.ref[el.dataset.ref-1] : d.q[el.dataset.n-1]; if(ph) ph.remove(); })
+      .catch(()=>{
+        if(!ph) return;
+        ph.innerHTML = `<span>問題の画像を読み込めませんでした。通信状態を確認してください。</span><button class="btn" type="button">もう一度読み込む</button>`;
+        ph.querySelector("button").addEventListener("click", fillImgs);
+      });
+  });
+}
+const dojo = q => `https://www.itpassportsiken.com/kakomon/${Y[q.y].dojo}/q${q.n}.html`;
+const srcText = q => `出典：${Y[q.y].label} ITパスポート試験 公開問題 問${q.n}（IPA）`;
+
+const PLAN = [
+ {id:"book",w:1,t:"試験日を予約する",d:"IPA の iパス公式サイトから申し込む。席が埋まる前に"},
+ {id:"w1",w:1,t:"ざっと1周：ストラテジ",d:"動画か講座でひととおり見る。すきま時間に用語の一問一答（ストラテジ）"},
+ {id:"w2",w:2,t:"ざっと1周：マネジメント",d:"すきま時間に用語の一問一答（マネジメント）"},
+ {id:"w3",w:3,t:"ざっと1周：テクノロジ",d:"計算問題は解き方だけ見ておく。すきま時間に用語の一問一答（テクノロジ）"},
+ {id:"w4",w:4,t:"分野別10問：ストラテジ・マネジメント",d:"間違えた問題は道場の解説を読む"},
+ {id:"w5",w:5,t:"分野別10問：テクノロジ",d:"計算問題・ネットワーク・セキュリティを重点的に"},
+ {id:"w6",w:6,t:"100問通しを2回",d:"120分を計って解く。点数は自動で記録される"},
+ {id:"w7",w:7,t:"100問通しを1回＋間違い直し",d:"目安は650点以上・各分野350点以上。届かなければ受験日をずらす"},
+ {id:"w8",w:8,t:"間違えた問題だけ解き直す",d:"新しいことには手を出さない"}
+];
+
+/* ---------- state ---------- */
+const DEFAULT = {examDate:"2026-11-28", log:{}, plan:{}, q:{}, w:{}, mocks:[], cur:null};
+let state = load();
+let ref = null, timer = null, writing = Promise.resolve();
+
+function fresh(){
+  const d = new Date(), p = n => String(n).padStart(2,"0");
+  return Object.assign(JSON.parse(JSON.stringify(DEFAULT)), {startDate: d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())});
+}
+function restore(s){ const st = Object.assign(fresh(), s); if(!s.startDate) st.startDate = START; return st; }
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem("ipass60v2")||"null"); if(s) return restore(s); }catch(e){}
+  return fresh();
+}
+function save(){
+  try{ localStorage.setItem("ipass60v2", JSON.stringify(state)); }catch(e){}
+  if(!ref) return;
+  clearTimeout(timer);
+  setStatus("保存中…");
+  timer = setTimeout(()=>{
+    const body = JSON.parse(JSON.stringify(state));
+    writing = writing.then(()=>ref.set(body)).then(()=>setStatus("クラウドに保存済み"))
+      .catch(e=>{
+        const code = e && e.code;
+        if(code==="invalid_argument" || code==="not_granted" || code==="revoked"){ ref = null; setStatus("この端末に保存しています"); return; }
+        setStatus(code==="quota_exceeded" ? "保存容量がいっぱいです（この端末には残っています）" : "クラウドに保存できませんでした（この端末には残っています）");
+      });
+  }, 800);
+}
+function setStatus(t){ document.getElementById("save").textContent = t; }
+
+(async()=>{
+  try{
+    if(!window.claude || !window.claude.use) return;
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    if(!db || !user) return;
+    const id = await user.id();
+    if(!id) return;
+    if(await user.can("data.write") === false) return;
+    ref = db.doc("data/users/" + id + "/progress");
+    const snap = await ref.get();
+    if(snap.exists){ state = restore(JSON.parse(JSON.stringify(snap.data()))); setStatus("クラウドに保存済み"); render(); }
+    else { setStatus("クラウドに保存します"); save(); }
+  }catch(e){ ref = null; }
+})();
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const pad = n => String(n).padStart(2,"0");
+const ymd = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y,m-1,d); };
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const md = d => (d.getMonth()+1)+"/"+d.getDate();
+const today = () => ymd(new Date());
+function weekNow(){
+  const diff = Math.floor((parse(today()) - parse(state.startDate))/86400000);
+  return Math.min(8, Math.max(1, Math.floor(diff/7)+1));
+}
+function weekRange(w){
+  const s = addDays(parse(state.startDate), (w-1)*7);
+  const e = w===8 ? parse(state.examDate) : addDays(s,6);
+  return md(s)+"〜"+md(e);
+}
+const totalMin = () => Object.values(state.log).reduce((a,b)=>a+b,0);
+const wrongIds = () => QS.filter(q=>state.q[q.id] && state.q[q.id].l===0).map(q=>q.id);
+function record(q, pick){
+  const r = state.q[q.id] || {c:0,w:0,l:0};
+  if(pick===q.a){ r.c++; r.l=1; } else { r.w++; r.l=0; }
+  state.q[q.id] = r;
+}
+function scoreOf(list, pickOf){
+  const s = {S:[0,0],M:[0,0],T:[0,0]}; let c=0;
+  list.forEach(q=>{ s[q.f][1]++; if(pickOf(q)===q.a){ s[q.f][0]++; c++; } });
+  const p = k => s[k][1] ? Math.round(s[k][0]/s[k][1]*1000) : null;
+  return {total: list.length ? Math.round(c/list.length*1000) : null, S:p("S"), M:p("M"), T:p("T"), c, n:list.length};
+}
+const passed = s => s.total>=600 && s.S>=300 && s.M>=300 && s.T>=300;
+const fmt = ms => { const t=Math.max(0,Math.ceil(ms/1000)); return Math.floor(t/60)+":"+pad(t%60); };
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- tabs ---------- */
+let tab = "home";
+try{ tab = localStorage.getItem("ipass60-tab") || "home"; }catch(e){}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>{
+  pauseMock(); tab=b.dataset.tab; try{localStorage.setItem("ipass60-tab",tab);}catch(e){} render(); window.scrollTo(0,0);
+}));
+
+let focusKey = null;
+function keyOf(el){
+  if(!el || el===document.body) return null;
+  if(el.id) return "#"+el.id;
+  for(const a of el.attributes){ if(a.name.startsWith("data-")) return `[${a.name}="${CSS.escape(a.value)}"]`; }
+  return null;
+}
+document.addEventListener("focusin", e=>{ if(e.target.closest("#view")) focusKey = keyOf(e.target); });
+new MutationObserver(()=>{
+  if(!focusKey || (document.activeElement && document.activeElement!==document.body)) return;
+  let el = document.querySelector("#view "+focusKey);
+  if(!el || el.disabled) el = document.querySelector("#next") || document.querySelector("#view [data-pick]:not(:disabled), #view [data-tp]:not(:disabled)");
+  if(el) el.focus({preventScroll:true});
+}).observe(document.getElementById("view"), {childList:true});
+function render(){
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===tab));
+  ({home:renderHome, quiz:renderQuiz, stats:renderStats, plan:renderPlan})[tab]();
+}
+
+/* ---------- reference (巻末資料) ---------- */
+function openRef(y){
+  const o = $("#ref");
+  let pages = ""; for(let i=1;i<=REFN[y];i++) pages += `<div class="paper"><div class="ph" role="status"></div><img data-y="${y}" data-ref="${i}" alt="巻末資料 ${i}ページ"></div>`;
+  o.innerHTML = `<div class="inner"><div class="row spread"><h2>巻末資料（${Y[y].label}）</h2><button class="btn" id="refClose">閉じる</button></div>
+    <p class="muted" style="margin:0">表計算ソフトと擬似言語の問題はこのルールで解きます。</p>${pages}
+    <div class="src">出典：${Y[y].label} ITパスポート試験 公開問題（IPA）</div><button class="btn" id="refClose2">閉じる</button></div>`;
+  o.hidden = false; o.scrollTop = 0; fillImgs();
+  const close = ()=>{ o.hidden = true; o.innerHTML = ""; };
+  $("#refClose").addEventListener("click", close); $("#refClose2").addEventListener("click", close);
+}
+
+/* ---------- home ---------- */
+function renderHome(){
+  const days = Math.ceil((parse(state.examDate) - parse(today()))/86400000);
+  const w = weekNow();
+  const tasks = PLAN.filter(p=>p.w===w);
+  const tm = state.log[today()]||0, tot = totalMin();
+  const pct = Math.min(100, tot/60/TARGET_H*100);
+  const vals = Array.from({length:14},(_,i)=>state.log[ymd(addDays(new Date(),i-13))]||0);
+  const max = Math.max(60, ...vals);
+  const bars = vals.map((v,i)=>`<div class="${v?"":"zero"} ${i===13?"today":""}" style="height:${Math.max(3,v/max*100)}%" title="${v}分"></div>`).join("");
+  const last = state.mocks[state.mocks.length-1];
+  const cta = state.cur ? "resume" : w<=3 ? "term" : "past";
+  $("#view").innerHTML = `
+  <div class="stack">
+    <section class="card countdown">
+      <div class="label">試験まで</div>
+      <div class="big"><span class="num tabular">${days>=0?days:0}</span><span>日</span></div>
+      <div class="row" style="font-size:13px;gap:12px">
+        <label class="row">開始日 <input type="date" id="startd" value="${state.startDate}"></label>
+        <label class="row">受験日 <input type="date" id="exam" value="${state.examDate}"></label>
+      </div>
+    </section>
+    <section class="card">
+      <div class="row spread"><h2>今週やること</h2><span class="tag">第${w}週 ${weekRange(w)}</span></div>
+      ${tasks.map(t=>`<label class="row" style="align-items:flex-start;flex-wrap:nowrap"><input type="checkbox" data-plan="${t.id}" ${state.plan[t.id]?"checked":""}><span><b>${t.t}</b><br><span class="muted">${t.d}</span></span></label>`).join("")}
+    </section>
+    <section class="card">
+      <h2>問題を解く</h2>
+      <div class="chips">${[["all","すべて"],["S","ストラテジ"],["M","マネジメント"],["T","テクノロジ"]].map(([k,l])=>`<button class="chip" data-hf="${k}" aria-pressed="${pf===k}">${l}</button>`).join("")}</div>
+      ${state.cur ? `<button class="btn primary big" id="resume">100問通しの続き（${Y[state.cur.y].label}・残り ${fmt(MOCK_MS-state.cur.el)}）</button>` : ""}
+      <div class="row">
+        <button class="btn ${cta==="term"?"primary":""}" id="hTerm">用語 10問</button>
+        <button class="btn ${cta==="past"?"primary":""}" id="go">過去問 10問</button>
+      </div>
+      <div class="row">
+        <button class="btn" id="hTermW" ${wrongTerms().length?"":"disabled"}>間違えた用語（${wrongTerms().length}）</button>
+        <button class="btn" id="hQW" ${wrongIds().length?"":"disabled"}>間違えた過去問（${wrongIds().length}）</button>
+      </div>
+      ${state.cur ? "" : `<button class="btn ghost" id="hMock">100問通しを選ぶ</button>`}
+      <p class="muted" style="margin:0">${cta==="term"?"今週のおすすめは用語。":cta==="past"?"今週のおすすめは過去問。":""}分野は用語と過去問の両方に効きます。</p>
+    </section>
+    <section class="card">
+      <div class="row spread"><h2>今日の勉強</h2><span class="num tabular" style="font-size:22px">${tm}<small style="font-size:13px"> 分</small></span></div>
+      <div class="row">
+        <button class="btn" data-add="15">+15分</button><button class="btn" data-add="30">+30分</button><button class="btn" data-add="60">+60分</button>
+        <button class="btn ghost" data-add="-15" ${tm?"":"disabled"}>−15分</button>
+      </div>
+      <div class="days" aria-label="直近14日の勉強時間">${bars}</div>
+      <div class="row spread muted"><span>直近14日</span><span>今日</span></div>
+      <div class="row spread"><span class="label">累計</span><span class="tabular"><b>${(tot/60).toFixed(1)}</b> / ${TARGET_H} 時間</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+    </section>
+    ${abilityCard()}
+    ${last ? `<p class="muted" style="margin:0">前回の100問通し：${Y[last.y].label} ${last.total}点（${passed(last)?"合格ライン超え":"ライン未達"}）</p>` : ""}
+  </div>`;
+  $("#exam").addEventListener("change",e=>{ if(e.target.value){ state.examDate=e.target.value; save(); render(); } });
+  $("#startd").addEventListener("change",e=>{ if(e.target.value){ state.startDate=e.target.value; save(); render(); } });
+  document.querySelectorAll("[data-add]").forEach(b=>b.addEventListener("click",()=>{ const k=today(); state.log[k]=Math.max(0,(state.log[k]||0)+Number(b.dataset.add)); if(!state.log[k]) delete state.log[k]; save(); render(); }));
+  bindPlan();
+  document.querySelectorAll("[data-hf]").forEach(b=>b.addEventListener("click",()=>{ pf=tf=b.dataset.hf; renderHome(); }));
+  $("#go").addEventListener("click",()=>{ tab="quiz"; py="all"; startPractice(false); });
+  $("#hTerm").addEventListener("click",()=>{ tab="quiz"; startTerms(false); });
+  $("#hTermW").addEventListener("click",()=>{ tab="quiz"; startTerms(true); });
+  $("#hQW").addEventListener("click",()=>{ tab="quiz"; startPractice(true); });
+  const hm = $("#hMock"); if(hm) hm.addEventListener("click",()=>{ tab="quiz"; view="menu"; render(); document.querySelector("[data-mock]")?.scrollIntoView({block:"center"}); });
+  const rs = $("#resume"); if(rs) rs.addEventListener("click",()=>{ tab="quiz"; view="mock"; render(); });
+}
+function bindPlan(){
+  document.querySelectorAll("[data-plan]").forEach(c=>c.addEventListener("change",()=>{ state.plan[c.dataset.plan]=c.checked; save(); render(); }));
+}
+
+/* ---------- quiz ---------- */
+let view = "menu";            // menu | practice | mock | result
+let pf = "all", py = "all";   // practice filters
+let prac = null;              // {list,i,pick,right}
+let zoom = false;
+let tick = null, tickFrom = 0;
+let lastResult = null;
+let tf = "all", tq = null;    // term filter / session
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const wrongTerms = () => TERMS.filter(t=>state.w[t.t] && state.w[t.t].l===0);
+const knownTerms = f => TERMS.filter(t=>(!f||t.f===f) && state.w[t.t] && state.w[t.t].l===1).length;
+function startTerms(wrongOnly){
+  const pool = wrongOnly ? wrongTerms() : TERMS.filter(t=>tf==="all"||t.f===tf);
+  const list = shuffle(pool).slice(0,10).map(t=>({t, c:shuffle([t, ...shuffle(TERMS.filter(o=>o.f===t.f && o!==t)).slice(0,3)])}));
+  tq = list.length ? {list, i:0, pick:null, right:0, wrong:!!wrongOnly} : null;
+  view = tq ? "term" : "menu"; render(); window.scrollTo(0,0);
+}
+function renderTerm(){
+  const p = tq;
+  if(p.i >= p.list.length){
+    $("#view").innerHTML = `<div class="stack"><section class="card"><div class="label">用語の結果</div>
+      <div class="num tabular" style="font-size:40px;font-weight:900">${p.right} / ${p.list.length}</div>
+      <p class="muted" style="margin:0">覚えた用語：${knownTerms()} / ${TERMS.length}語</p>
+      <div class="row"><button class="btn primary" id="again">もう10問</button>${wrongTerms().length?`<button class="btn" id="wr">間違えた用語だけ（${wrongTerms().length}）</button>`:""}<button class="btn ghost" id="menu">メニューへ</button></div></section></div>`;
+    $("#again").addEventListener("click",()=>startTerms(p.wrong));
+    const wr=$("#wr"); if(wr) wr.addEventListener("click",()=>startTerms(true));
+    $("#menu").addEventListener("click",()=>{ view="menu"; render(); });
+    return;
+  }
+  const q = p.list[p.i], k = p.pick;
+  $("#view").innerHTML = `<div class="stack"><section class="card">
+    <div class="row spread"><span class="tag">${F[q.t.f]}</span><span class="muted tabular">${p.i+1} / ${p.list.length}</span></div>
+    <div class="label">この説明にあてはまる用語は？</div>
+    <div class="q" style="font-size:17px;font-weight:700">${esc(q.t.d)}</div>
+    <div class="choices">${q.c.map((c,i)=>`<button class="choice ${k!==null&&c===q.t?"ok":""} ${k===i&&c!==q.t?"ng":""}" data-tp="${i}" ${k!==null?"disabled":""}><b>${KANA[i]}</b><span>${esc(c.t)}</span></button>`).join("")}</div>
+    ${k!==null?`<div class="verdict ${q.c[k]===q.t?"ok":"ng"}">${q.c[k]===q.t?"正解":"不正解　正解は「"+esc(q.t.t)+"」"}</div>
+      ${q.c[k]!==q.t?`<div class="expl">あなたが選んだ「${esc(q.c[k].t)}」は：${esc(q.c[k].d)}</div>`:""}
+      <button class="btn primary" id="next">${p.i+1<p.list.length?"次へ":"結果を見る"}</button>`:""}
+    </section><button class="btn ghost" id="quit">やめてメニューへ</button></div>`;
+  document.querySelectorAll("[data-tp]").forEach(b=>b.addEventListener("click",()=>{
+    const i = Number(b.dataset.tp); p.pick = i;
+    const r = state.w[q.t.t] || {c:0,w:0,l:0};
+    if(q.c[i]===q.t){ r.c++; r.l=1; p.right++; } else { r.w++; r.l=0; }
+    state.w[q.t.t] = r; save(); render();
+  }));
+  const nx=$("#next"); if(nx) nx.addEventListener("click",()=>{ p.i++; p.pick=null; render(); window.scrollTo(0,0); });
+  $("#quit").addEventListener("click",()=>{ tq=null; view="menu"; render(); });
+}
+
+function startPractice(wrongOnly){
+  let pool = wrongOnly ? wrongIds().map(id=>QBY[id]) : QS.filter(q=>(pf==="all"||q.f===pf)&&(py==="all"||q.y===py));
+  pool = pool.slice().sort(()=>Math.random()-.5).slice(0,10);
+  prac = pool.length ? {list:pool, i:0, pick:null, right:0, wrong:!!wrongOnly} : null;
+  view = prac ? "practice" : "menu"; render(); window.scrollTo(0,0);
+}
+function startMock(y){
+  state.cur = {y, ans:{}, i:1, el:0}; save(); view = "mock"; render(); window.scrollTo(0,0);
+}
+function pauseMock(){
+  if(tick){ clearInterval(tick); tick=null; if(state.cur){ state.cur.el += Date.now()-tickFrom; save(); } }
+}
+function finishMock(){
+  pauseMock();
+  const c = state.cur; if(!c) return;
+  const list = QS.filter(q=>q.y===c.y);
+  list.forEach(q=>{ if(c.ans[q.n]!==undefined) record(q, c.ans[q.n]); });
+  const s = scoreOf(list, q=>c.ans[q.n]);
+  const res = {y:c.y, date:today(), total:s.total, S:s.S, M:s.M, T:s.T, c:s.c, min:Math.round(Math.min(c.el,MOCK_MS)/60000), ans:c.ans};
+  state.mocks.push({y:res.y,date:res.date,total:res.total,S:res.S,M:res.M,T:res.T,c:res.c,min:res.min});
+  state.cur = null; save();
+  lastResult = res; view = "result"; render(); window.scrollTo(0,0);
+}
+
+function paperHtml(q){
+  return `<div class="paper ${zoom?"zoom":""}"><div class="ph" role="status"></div><img data-y="${q.y}" data-n="${q.n}" alt="${esc(Y[q.y].label)} 問${q.n}"></div>
+    <div class="row spread"><span class="src">${srcText(q)}</span>
+      <span class="row"><button class="btn ghost" id="zoom" style="padding:4px 10px;font-size:12px">${zoom?"縮小":"拡大"}</button>
+      <button class="btn ghost" id="refBtn" style="padding:4px 10px;font-size:12px">巻末資料</button></span></div>`;
+}
+function bindPaper(q){
+  fillImgs();
+  $("#zoom").addEventListener("click",()=>{ zoom=!zoom; render(); });
+  $("#refBtn").addEventListener("click",()=>openRef(q.y));
+}
+
+function renderQuiz(){
+  if(view==="term" && tq) return renderTerm();
+  if(view==="practice" && prac) return renderPractice();
+  if(view==="mock" && state.cur) return renderMock();
+  if(view==="result" && lastResult) return renderResult();
+  view = "menu";
+  const wn = wrongIds().length;
+  const fchips = [["all","すべて"],["S","ストラテジ"],["M","マネジメント"],["T","テクノロジ"]]
+    .map(([k,l])=>`<button class="chip" data-pf="${k}" aria-pressed="${pf===k}">${l}</button>`).join("");
+  const ychips = [["all","3年分"],...YEARS.map(y=>[y.id,y.label])]
+    .map(([k,l])=>`<button class="chip" data-py="${k}" aria-pressed="${py===k}">${l}</button>`).join("");
+  const done = y => state.mocks.filter(m=>m.y===y).length;
+  const tchips = [["all","すべて"],["S","ストラテジ"],["M","マネジメント"],["T","テクノロジ"]]
+    .map(([k,l])=>`<button class="chip" data-tf="${k}" aria-pressed="${tf===k}">${l}</button>`).join("");
+  const wt = wrongTerms().length;
+  $("#view").innerHTML = `<div class="stack">
+    <section class="card">
+      <div class="row spread"><h2>用語の一問一答</h2><span class="tag">1週目から</span></div>
+      <div class="chips">${tchips}</div>
+      <div class="row"><button class="btn primary" id="startT">10問はじめる</button><button class="btn" id="startTW" ${wt?"":"disabled"}>間違えた用語（${wt}）</button></div>
+      <p class="muted" style="margin:0">説明を読んで4つから選ぶ形式。覚えた用語：${knownTerms()} / ${TERMS.length}語</p>
+    </section>
+    <section class="card">
+      <div class="row spread"><h2>分野別10問</h2><span class="tag">4〜5週目</span></div>
+      <div class="chips">${fchips}</div>
+      <div class="chips">${ychips}</div>
+      <button class="btn primary" id="startP">10問はじめる</button>
+      <p class="muted" style="margin:0">1問ごとに正解が出ます。解説は過去問道場のページで読めます。</p>
+    </section>
+    <section class="card">
+      <div class="row spread"><h2>100問通し</h2><span class="tag">6〜7週目</span></div>
+      ${state.cur ? `<p style="margin:0">${Y[state.cur.y].label}を解いている途中です（${Object.keys(state.cur.ans).length}/100問・残り ${fmt(MOCK_MS-state.cur.el)}）</p>
+        <div class="row"><button class="btn primary" id="resume">続きから</button><button class="btn ghost" id="discard">やめて破棄</button></div>`
+      : `<p class="muted" style="margin:0">本番と同じ120分。途中で閉じても続きから再開できます。</p>
+        <div class="chips">${YEARS.map(y=>`<button class="chip" data-mock="${y.id}">${y.label}${done(y.id)?`（${done(y.id)}回済）`:""}</button>`).join("")}</div>`}
+    </section>
+    <section class="card">
+      <div class="row spread"><h2>間違い直し</h2><span class="tag">8週目</span></div>
+      <p class="muted" style="margin:0">最後に間違えたままの問題から10問。正解すると一覧から外れます。</p>
+      <button class="btn" id="startW" ${wn?"":"disabled"}>間違えた問題を解く（${wn}問）</button>
+    </section>
+    <p class="muted" style="margin:0">問題：IPA ITパスポート試験 公開問題（令和6〜8年度）。正解はIPA公表の解答例です。</p>
+  </div>`;
+  document.querySelectorAll("[data-tf]").forEach(b=>b.addEventListener("click",()=>{ tf=b.dataset.tf; render(); }));
+  $("#startT").addEventListener("click",()=>startTerms(false));
+  $("#startTW").addEventListener("click",()=>startTerms(true));
+  document.querySelectorAll("[data-pf]").forEach(b=>b.addEventListener("click",()=>{ pf=b.dataset.pf; render(); }));
+  document.querySelectorAll("[data-py]").forEach(b=>b.addEventListener("click",()=>{ py=b.dataset.py; render(); }));
+  document.querySelectorAll("[data-mock]").forEach(b=>b.addEventListener("click",()=>startMock(b.dataset.mock)));
+  $("#startP").addEventListener("click",()=>startPractice(false));
+  $("#startW").addEventListener("click",()=>startPractice(true));
+  const rs=$("#resume"); if(rs) rs.addEventListener("click",()=>{ view="mock"; render(); });
+  const dc=$("#discard"); if(dc) dc.addEventListener("click",()=>{
+    if(dc.dataset.sure){ state.cur=null; save(); render(); } else { dc.dataset.sure="1"; dc.textContent="本当に破棄する"; }
+  });
+}
+
+function renderPractice(){
+  const p = prac;
+  if(p.i >= p.list.length){
+    $("#view").innerHTML = `<div class="stack"><section class="card"><div class="label">結果</div>
+      <div class="num tabular" style="font-size:40px;font-weight:900">${p.right} / ${p.list.length}</div>
+      <p class="muted" style="margin:0">${p.right/p.list.length>=0.65?"合格ライン（6割）を超えています。":"6割を超えるまで、間違えた問題を解き直しましょう。"}</p>
+      <div class="row"><button class="btn primary" id="again">もう10問</button><button class="btn" id="menu">メニューへ</button></div></section></div>`;
+    $("#again").addEventListener("click",()=>startPractice(p.wrong));
+    $("#menu").addEventListener("click",()=>{ view="menu"; render(); });
+    return;
+  }
+  const q = p.list[p.i], k = p.pick;
+  $("#view").innerHTML = `<div class="stack"><section class="card">
+    <div class="row spread"><span class="row"><span class="tag">${F[q.f]}</span><span class="tag">${Y[q.y].label} 問${q.n}</span></span><span class="muted tabular">${p.i+1} / ${p.list.length}</span></div>
+    ${paperHtml(q)}
+    <div class="answers">${[0,1,2,3].map(i=>`<button class="ans ${k!==null&&i===q.a?"ok":""} ${k===i&&i!==q.a?"ng":""}" data-pick="${i}" ${k!==null?"disabled":""}>${KANA[i]}</button>`).join("")}</div>
+    ${k!==null?`<div class="verdict ${k===q.a?"ok":"ng"}">${k===q.a?"正解":"不正解　正解は「"+KANA[q.a]+"」"}</div>
+      <a class="btn" href="${dojo(q)}" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">過去問道場で解説を読む</a>
+      <button class="btn primary" id="next">${p.i+1<p.list.length?"次の問題":"結果を見る"}</button>`:""}
+    </section><button class="btn ghost" id="quit">やめてメニューへ</button></div>`;
+  bindPaper(q);
+  document.querySelectorAll("[data-pick]").forEach(b=>b.addEventListener("click",()=>{
+    const i = Number(b.dataset.pick); p.pick = i; if(i===q.a) p.right++;
+    record(q,i); save(); render();
+  }));
+  const nx=$("#next"); if(nx) nx.addEventListener("click",()=>{ p.i++; p.pick=null; render(); window.scrollTo(0,0); });
+  $("#quit").addEventListener("click",()=>{ prac=null; view="menu"; render(); });
+}
+
+function renderMock(){
+  const c = state.cur, list = QS.filter(q=>q.y===c.y), q = list[c.i-1];
+  const answered = Object.keys(c.ans).length;
+  $("#view").innerHTML = `<div class="stack">
+    <section class="card">
+      <div class="row spread"><span class="tag">${Y[c.y].label} 100問通し</span><span class="timer tabular" id="clock"></span></div>
+      <div class="row spread"><span class="row"><b>問${q.n}</b><span class="tag">${F[q.f]}</span></span><span class="muted tabular">解答済み ${answered} / 100</span></div>
+      ${paperHtml(q)}
+      <div class="answers">${[0,1,2,3].map(i=>`<button class="ans ${c.ans[q.n]===i?"sel":""}" data-pick="${i}">${KANA[i]}</button>`).join("")}</div>
+      <div class="row spread"><button class="btn" id="prev" ${c.i===1?"disabled":""}>前の問題</button><button class="btn primary" id="next">${c.i<100?"次の問題":"見直しへ"}</button></div>
+    </section>
+    <section class="card">
+      <div class="row spread"><h2>問題一覧</h2><span class="muted">•＝解答済み。押すとその問題へ</span></div>
+      <div class="grid100">${list.map(x=>{ const d=c.ans[x.n]!==undefined; return `<button data-go="${x.n}" class="${d?"done":""} ${x.n===c.i?"cur":""}" aria-label="問${x.n}${d?" 解答済み":" 未解答"}${x.n===c.i?" 表示中":""}">${x.n}${d?'<span aria-hidden="true">•</span>':""}</button>`; }).join("")}</div>
+      <button class="btn primary" id="finish">解答を終了して採点する</button>
+      <p class="muted" style="margin:0">一時中断するときは、ほかのタブへ移るだけでOK。タイマーも止まります。</p>
+    </section></div>`;
+  bindPaper(q);
+  const go = n => { c.i = Math.min(100,Math.max(1,n)); save(); renderMock(); window.scrollTo(0,0); };
+  document.querySelectorAll("[data-pick]").forEach(b=>b.addEventListener("click",()=>{ c.ans[q.n]=Number(b.dataset.pick); save(); renderMock(); }));
+  $("#prev").addEventListener("click",()=>go(c.i-1));
+  $("#next").addEventListener("click",()=>{ if(c.i<100) go(c.i+1); else $("#finish").scrollIntoView({behavior:"smooth"}); });
+  document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(Number(b.dataset.go))));
+  const fin = $("#finish");
+  fin.addEventListener("click",()=>{
+    if(answered<100 && !fin.dataset.sure){ fin.dataset.sure="1"; fin.textContent=`未解答が${100-answered}問あります。このまま採点する`; return; }
+    finishMock();
+  });
+  if(!tick){ tickFrom = Date.now(); tick = setInterval(drawClock, 1000); }
+  drawClock();
+}
+function drawClock(){
+  const c = state.cur, el = document.getElementById("clock");
+  if(!c || !el){ return; }
+  const left = MOCK_MS - (c.el + (Date.now()-tickFrom));
+  el.textContent = "残り " + fmt(left);
+  el.classList.toggle("low", left < 10*60*1000);
+  if(left <= 0) finishMock();
+}
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden) pauseMock();
+  else if(tab==="quiz" && view==="mock" && state.cur && !tick){ tickFrom=Date.now(); tick=setInterval(drawClock,1000); }
+});
+
+function fieldRow(name, v, line){
+  const st = v===null ? `<span class="pill na">未回答</span>` : v>=line ? `<span class="pill ok">ライン超え</span>` : `<span class="pill ng">あと${line-v}点</span>`;
+  return `<div class="field"><div class="row"><b>${name}</b><span class="row"><span class="tabular">${v===null?"—":v+" 点"}</span>${st}</span></div>
+    <div class="bar"><i style="width:${(v||0)/10}%"></i><span class="mark" style="left:${line/10}%"></span></div></div>`;
+}
+function renderResult(){
+  const r = lastResult, list = QS.filter(q=>q.y===r.y);
+  const wrong = list.filter(q=>r.ans[q.n]!==q.a);
+  $("#view").innerHTML = `<div class="stack">
+    <section class="card">
+      <div class="row spread"><h2>${Y[r.y].label} 100問通しの結果</h2><span class="pill ${passed(r)?"ok":"ng"}">${passed(r)?"合格ライン超え":"ライン未達"}</span></div>
+      <div class="row" style="align-items:baseline"><span class="num tabular" style="font-size:44px;font-weight:900">${r.total}</span><span>点 / 1000</span><span class="muted">（${r.c}問正解・${r.min}分）</span></div>
+      ${fieldRow("総合", r.total, 600)}${fieldRow(F.S, r.S, 300)}${fieldRow(F.M, r.M, 300)}${fieldRow(F.T, r.T, 300)}
+    </section>
+    <section class="card">
+      <h2>答え合わせ</h2>
+      <div class="grid100">${list.map(q=>{ const ok=r.ans[q.n]===q.a; return `<a href="${dojo(q)}" target="_blank" rel="noopener" class="${ok?"ok":"ng"}" aria-label="問${q.n} ${ok?"正解":"不正解"}（道場の解説を開く）">${q.n}<span aria-hidden="true">${ok?"○":"×"}</span></a>`; }).join("")}</div>
+      <p class="muted" style="margin:0">×が不正解・未解答（${wrong.length}問）。押すと道場の解説が開きます。</p>
+      <button class="btn primary" id="toWrong" ${wrongIds().length?"":"disabled"}>間違えた問題を解き直す</button>
+      <button class="btn" id="menu">メニューへ</button>
+    </section></div>`;
+  $("#toWrong").addEventListener("click",()=>startPractice(true));
+  $("#menu").addEventListener("click",()=>{ view="menu"; render(); });
+}
+
+/* ---------- stats ---------- */
+function abilityCard(){
+  const answered = QS.filter(q=>state.q[q.id]);
+  const s = scoreOf(answered, q=> state.q[q.id].l ? q.a : -1);
+  return `<section class="card">
+      <div class="row spread"><h2>分野別の実力</h2><span class="muted tabular">${answered.length} / 300問 解答済み</span></div>
+      ${fieldRow("総合", s.total, 600)}${fieldRow(F.S, s.S, 300)}${fieldRow(F.M, s.M, 300)}${fieldRow(F.T, s.T, 300)}
+      <p class="muted" style="margin:0">各問題の「最後の解答」で計算。オレンジの線が合格ライン（総合600点・各分野300点）です。</p>
+    </section>`;
+}
+function renderStats(){
+  const hist = state.mocks.slice().reverse();
+  $("#view").innerHTML = `<div class="stack">
+    <section class="card">
+      <h2>100問通しの記録</h2>
+      ${hist.length ? `<div style="overflow-x:auto"><table class="hist tabular"><thead><tr><th>日付・年度</th><th>総合</th><th>ストラ</th><th>マネ</th><th>テクノ</th></tr></thead><tbody>
+        ${hist.map(m=>`<tr><td>${m.date.slice(5).replace("-","/")} ${Y[m.y].label.replace("年度","")}</td><td class="${m.total<600?"ng":""}">${m.total}</td><td class="${m.S<300?"ng":""}">${m.S}</td><td class="${m.M<300?"ng":""}">${m.M}</td><td class="${m.T<300?"ng":""}">${m.T}</td></tr>`).join("")}
+      </tbody></table></div>` : `<p class="muted" style="margin:0">まだありません。6週目から「問題」タブの100問通しで記録されます。</p>`}
+    </section>
+    <section class="card">
+      <div class="row spread"><h2>覚えた用語</h2><span class="muted tabular">${knownTerms()} / ${TERMS.length}語</span></div>
+      ${["S","M","T"].map(f=>{ const n=TERMS.filter(t=>t.f===f).length, k=knownTerms(f); return `<div class="field"><div class="row"><b>${F[f]}</b><span class="tabular">${k} / ${n}</span></div><div class="bar"><i style="width:${k/n*100}%"></i></div></div>`; }).join("")}
+      <p class="muted" style="margin:0">最後に正解した用語を「覚えた」と数えています。</p>
+    </section>
+    ${abilityCard()}
+    <p class="muted" style="margin:0">点数は正答率を1000点に換算した目安です。本番の採点方式（IRT）とは違います。</p>
+  </div>`;
+}
+
+/* ---------- plan ---------- */
+function renderPlan(){
+  const w = weekNow(), done = PLAN.filter(p=>state.plan[p.id]).length;
+  $("#view").innerHTML = `<div class="stack">
+    <section class="card">
+      <div class="row spread"><h2>8週間プラン</h2><span class="tabular muted">${done} / ${PLAN.length} 完了</span></div>
+      <div class="bar"><i style="width:${done/PLAN.length*100}%"></i></div>
+      <ul class="plan">${PLAN.map(p=>`<li class="${p.w===w?"now":""}"><input type="checkbox" id="p-${p.id}" data-plan="${p.id}" ${state.plan[p.id]?"checked":""}>
+        <label for="p-${p.id}"><span class="when">第${p.w}週 ${weekRange(p.w)}${p.w===w?"（今週）":""}</span><br><b style="${state.plan[p.id]?"text-decoration:line-through;color:var(--muted)":""}">${p.t}</b><br><span class="muted">${p.d}</span></label></li>`).join("")}</ul>
+    </section>
+    <section class="card">
+      <h2>使うもの</h2>
+      <div><b>過去問</b>：このアプリ（令和6〜8年度の300問）</div>
+      <div><b>解説</b>：<a href="https://www.itpassportsiken.com/" target="_blank" rel="noopener">ITパスポート過去問道場</a></div>
+      <div><b>用語の理解</b>：YouTube の解説動画か、有料の講座アプリを1つだけ</div>
+      <div><b>申し込み</b>：<a href="https://www3.jitec.ipa.go.jp/JitesCbt/index.html" target="_blank" rel="noopener">IPA iパス公式サイト</a></div>
+    </section>
+  </div>`;
+  bindPlan();
+}
+
+if(tab==="quiz" && state.cur) view = "mock";
+render();
+</script>
+
+</body>
+</html>
