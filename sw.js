@@ -1,5 +1,5 @@
 // iパス 60日 service worker: keeps the app and question data on the phone for offline use.
-const VERSION = "ipass-e7048c8364";
+const VERSION = "ipass-3c1b788283";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 const DATA = ["data/2026r08.json", "data/2025r07.json", "data/2024r06.json"];
 
